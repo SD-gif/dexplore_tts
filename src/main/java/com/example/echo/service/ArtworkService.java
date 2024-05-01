@@ -1,13 +1,17 @@
 package com.example.echo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.google.cloud.texttospeech.v1.*;
-import com.example.echo.DTO.ArtworkDTO;
+import com.example.echo.DTO.Request.ArtworkDTO;
 import com.example.echo.Data.Artwork;
 import com.example.echo.Repository.ArtworkRepository;
 import com.google.protobuf.ByteString;
+
+
 
 @Service
 public class ArtworkService {
@@ -38,11 +42,10 @@ public class ArtworkService {
         }
     }
 
-    public ByteArrayResource getArtworkVoiceDataByName(String name) {
+    public byte[] getArtworkVoiceDataByName(String name) {
         Artwork artwork = artworkRepository.findByName(name)
         .orElseThrow(() -> new ResourceNotFoundException("Artwork not found with name " + name));
-
-        return new ByteArrayResource(artwork.getVoiceData());
+        return artwork.getVoiceData();
     }
 
     public class ResourceNotFoundException extends RuntimeException {
@@ -51,5 +54,14 @@ public class ArtworkService {
         }
     }
     
+    
+    public MultipartFile byteArrayToMultipartFile(String name) {
+        Artwork artwork = artworkRepository.findByName(name)
+        .orElseThrow(() -> new ResourceNotFoundException("Artwork not found with name " + name));
+        byte[] data = artwork.getVoiceData();
+        String contentType = "audio/mpeg";
+        return new MockMultipartFile(name, name, contentType, data);
+    }
+
 }
 

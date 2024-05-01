@@ -6,4 +6,5 @@ import com.example.echo.Data.Artwork;
 
 public interface ArtworkRepository extends JpaRepository<Artwork, Long> {
     Optional<Artwork> findByName(String name);
+    boolean existsByName(String Name);
 }
